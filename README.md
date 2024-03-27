@@ -12,14 +12,17 @@ I have copied the file solver.py from the given link, and added it to my code sc
 
 ![image](https://github.com/FraneCal/UpWork-example/assets/90317417/df21c782-f160-4c7e-a3dc-96efac76ad02) ![image](https://github.com/FraneCal/UpWork-example/assets/90317417/c54a3374-272d-4142-a865-68397fcd5437)
 
-I would like to use the PuzleSolver class from the solver.py to get the distance (under the variable solution) between them, and later on use that distance to move the missing piece to the board. But when it runs the code I get the following error message: 
+I would like to use the PuzleSolver class from the solver.py to get the distance (under the variable solution) between them, and later on, use that distance to move the missing piece to the board. But when I run the code, I get the following error message: 
+
 
 File "c:\Users\xxxxx\OneDrive - xxxxx SA\Documents\German site\solver.py", line 17, in get_position
 res = cv2.matchTemplate(background, template, cv2.TM_CCOEFF_NORMED)
       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 cv2.error: OpenCV(4.9.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:588: error: (-215:Assertion failed) corr.rows <= img.rows + templ.rows - 1 && corr.cols <= img.cols + templ.cols - 1 in function 'cv::crossCorr'
 
+
 for the function (in solver.py):
+
 
 def get_position(self):
         template, x_inf, y_sup, y_inf = self.__piece_preprocessing()
@@ -37,7 +40,9 @@ def get_position(self):
 
 How can I fix this issue so that I get the distance between them?
 
-P.S. The puzzle captcha does not appear always, so you will need to run the program a couple of times.
+P.S. The puzzle captcha does not appear always, so you will need to run the program a couple of times. I have also asked this question on stackoverflow, so maybe you can see the explanation there as well. Here is the link:
+
+- https://stackoverflow.com/questions/78219380/template-matching-function-is-not-working-on-this-puzzle-piece-captcha
 
 
 
