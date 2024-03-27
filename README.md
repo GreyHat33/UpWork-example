@@ -45,4 +45,54 @@ P.S. The puzzle captcha does not appear always, so you will need to run the prog
 - https://stackoverflow.com/questions/78219380/template-matching-function-is-not-working-on-this-puzzle-piece-captcha
 
 
+The error you're encountering is related to the cv2.matchTemplate function in OpenCV, indicating that there's an issue with the dimensions of the images you're trying to match. Specifically, the error message:
+
+less
+Copy code
+cv2.error: OpenCV(4.9.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\templmatch.cpp:588: error: (-215:Assertion failed) corr.rows <= img.rows + templ.rows - 1 && corr.cols <= img.cols + templ.cols - 1 in function 'cv::crossCorr'
+suggests that the size of the template image is larger than the search region in the background image, which is not allowed for the template matching operation. Here's how you can troubleshoot and fix this issue:
+
+1. Validate Image Dimensions
+First, ensure that the template image (the puzzle piece) is smaller than the background image (the board) in both width and height. You can print out their dimensions to verify this:
+
+python
+Copy code
+print("Template dimensions:", template.shape)
+print("Background dimensions:", background.shape)
+2. Adjust the Preprocessing Functions
+If the template ends up being larger, you need to check the preprocessing functions (__piece_preprocessing and __background_preprocessing) to ensure they correctly process the images. The preprocessing should result in a template that is indeed smaller than the background over the region you're searching.
+
+3. Ensure Correct Region of Interest (ROI)
+Sometimes, the error can occur if the region of interest (ROI) in the background image that you're searching within is incorrectly defined, making it smaller than the template. Adjust the ROI in the background image to ensure it's larger than the template image.
+
+4. Debugging the Preprocessing
+Inspect or debug the preprocessing functions to ensure they return correctly sized images. For instance, ensure that __background_preprocessing(y_sup, y_inf) correctly slices the background image to a larger region than the template.
+
+5. Update OpenCV (Optional)
+While not directly related to the error message, ensuring you're using the latest version of OpenCV can help avoid any potential bugs:
+
+bash
+Copy code
+pip install --upgrade opencv-python
+Implementing a Possible Fix
+Based on the error description and typical usage of cv2.matchTemplate, here is an example approach to adjust your preprocessing to ensure the template is smaller than the background:
+
+python
+Copy code
+def get_position(self):
+    template, x_inf, y_sup, y_inf = self.__piece_preprocessing()
+    background = self.__background_preprocessing(y_sup, y_inf)
+
+    # Ensure the template is smaller than the background
+    assert template.shape[0] < background.shape[0] and template.shape[1] < background.shape[1], "Template must be smaller than background"
+
+    res = cv2.matchTemplate(background, template, cv2.TM_CCOEFF_NORMED)
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+    top_left = max_loc
+
+    origin = x_inf
+    end = top_left[0] + PIXELS_EXTENSION
+
+    return end - origin
+By adding an assertion, you can catch cases where the template might be larger than the background, which directly addresses the cause of the error you're encountering. This approach provides a clear error message if the precondition fails, helping you debug the issue more effectively.
 
